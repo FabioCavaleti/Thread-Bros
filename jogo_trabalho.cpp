@@ -1,4 +1,6 @@
 #include <bits/stdc++.h>
+#include "maps.hpp"
+
 
 #define LIN 5
 #define COL 30
@@ -45,9 +47,8 @@ void printMaze()
 
 int main()
 {
-    createMaze();
-    printMaze();
-
-
+    map_t *mapaEscolhido = readMap("mapabasico.txt");
+    printMap(mapaEscolhido);
+    free(mapaEscolhido);
     return 0;
 }
