@@ -39,7 +39,11 @@ map_t *readMap(std::string mapName){
             
 
         }
+    }else
+    {
+        return NULL;
     }
+    
 
     return newMap;
 }
@@ -59,4 +63,14 @@ void printMap(map_t *mapa){
         printf("Critical zone %d = ( %d , %d )\n",i,mapa->criticalZones[i].first,mapa->criticalZones[i].second);
     }
     
+}
+
+bool critOcupada(map_t* mapa){
+    for (int i = 0; i < mapa->criticalZones.size(); i++)
+    {
+        int coordX = mapa->criticalZones[i].first;
+        int coordY = mapa->criticalZones[i].second;
+        if(mapa->contents[coordX][coordY]=='L' || mapa->contents[coordX][coordY]=='M') return true;
+    }
+    return false;
 }

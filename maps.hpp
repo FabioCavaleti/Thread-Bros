@@ -20,5 +20,6 @@ typedef struct gamemap{
 
 map_t *readMap(std::string mapName);
 void printMap(map_t *mapa);
+bool critOcupada(map_t* mapa);
 
 #endif

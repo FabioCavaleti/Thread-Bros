@@ -17,5 +17,5 @@ run:
 valgrind:
 	valgrind $(VFLAGS) $(BINARY)
 
-clear:
+clean:
 	rm -rf $(DEP) $(BINARY)
