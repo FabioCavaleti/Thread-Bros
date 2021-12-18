@@ -21,8 +21,8 @@ int main()
     printMap(mapaEscolhido);
     std::string move = "";
 
-    Player mario (true);
-    Player luigi (false);
+    Player mario(true);
+    Player luigi(false);
 
     while (move.compare("exit")!=0) {
         printf("para sair digite 'exit'\n");
