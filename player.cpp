@@ -4,20 +4,14 @@
 
 Player::Player (bool isMario) {
     isMario = isMario;
-    if(isMario)
-        playerIcon = 'M';
-    else
-        playerIcon = 'L';
+
+    playerIcon = isMario ? 'M' : 'L';
 }
 
 void Player::movePlayer(map_t *mapa, std::string direction, int amount){
     std::pair<int,int> pos;
 
-    if(isMario){ 
-        pos = mapa->marioPos;
-    } else {
-        pos = mapa->luigiPos;
-    }
+    pos = isMario ? mapa->marioPos : mapa->luigiPos;
 
     char prevChar;
 
