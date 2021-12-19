@@ -124,8 +124,10 @@ Player l(3,3);
 
 void startPuzzles()
 {
-    Puzzle p('a', 1, COL-5, 'A', 3, COL-3);
+    Puzzle p('a', 1, COL-7, 'A', 3, COL-7);
+    Puzzle p2('b', 3, COL-6, 'B', 1, COL - 6);
     puzzles.push_back(p);
+    puzzles.push_back(p2);
 }
 
 void createTable()
@@ -148,8 +150,8 @@ void attMaze()
     createTable();
     for(int i = 0; i < COL; i++)
         table[2][i] = '.';
-    table[m.getX()][m.getY()] = '*';
-    table[l.getX()][l.getY()] = '#';
+    table[m.getX()][m.getY()] = 'M';
+    table[l.getX()][l.getY()] = 'L';
 
     for(int i = 0; i < (int) puzzles.size(); i++)
     {
@@ -186,10 +188,12 @@ void moveM()
         if(buffer[0] == 'd')
         {
             m.setY(m.getY() + 1);
+            buffer.erase(buffer.begin());
         }
         if(buffer[0] == 'a')
         {
             m.setY(m.getY() - 1);
+            buffer.erase(buffer.begin());
         }
     }
     mtx.unlock();
@@ -202,19 +206,17 @@ void moveL()
     mtx.lock();
     if(buffer.size() > 0)
     {
-        if(buffer[0] == '[')
-        {
-            if(buffer[1] == KEY_RIGHT)
-            {
-                l.setY(l.getY() - 1);
-                buffer.erase(buffer.begin(), buffer.begin() + 1);
-            }
-            else if(buffer[1] == KEY_LEFT)
+        
+            if(buffer[0] == 'l')
             {
                 l.setY(l.getY() + 1);
-                buffer.erase(buffer.begin(), buffer.begin() + 1);
+                buffer.erase(buffer.begin());
             }
-        }
+            else if(buffer[0] == 'j')
+            {
+                l.setY(l.getY() - 1);
+                buffer.erase(buffer.begin());
+            }
     }
     mtx.unlock();
 }
@@ -222,15 +224,10 @@ void moveL()
 void move()
 {
     //Semaphoro aqui.
-   system("stty raw");
-   char key;
-   scanf("%c", &key);
+    system("stty raw");
+    char key;
+    scanf("%c", &key);
     buffer.push_back(key);
-    if(key == '[')
-    {
-        scanf("%c", &key);
-        buffer.push_back(key);
-    }
     system("stty cooked");
 
     std::thread Mario(moveM);
@@ -247,19 +244,20 @@ void move()
 // {
 
 // }
+// ^[[C
+// [C
 
 void game()
 {
     move();
     // colision(m, l);
     attMaze();
-    sleep(500);
+    
 }
 
 int main()
 {
 
-    cout << "A" << endl;
 
     startPuzzles();
  
@@ -466,10 +464,15 @@ int main()
 //     if(key == 'd')
 //     {
 //         m.setY(m.getY() + 1);
+        
+        
+       
+        
 //     }
 //     if(key == 'a')
 //     {
 //         m.setY(m.getY() - 1);
+        
 //     }
 
 
@@ -479,10 +482,12 @@ int main()
 //         if(key == 'C')
 //         {
 //             l.setY(l.getY() + 1);
+             
 //         }
 //         if(key == 'D')
 //         {
 //             l.setY(l.getY() - 1);
+            
 //         }
 
 //     }
