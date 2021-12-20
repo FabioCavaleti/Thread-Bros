@@ -19,6 +19,7 @@ char table[LIN][COL];
 
 
 void printMaze();
+void endGame();
 
 class Puzzle
 {
@@ -79,6 +80,10 @@ class Puzzle
 
 };
 
+vector<Puzzle> puzzles;
+pair<int, int> endM, endL;
+
+
 class Player
 {
     private:
@@ -113,12 +118,108 @@ class Player
         }
 
 
+        void moveLeft()
+        {
+            bool canMove = false;
+            if(y > 1 )
+            {
+                if(table[x][y - 1] == ' ')
+                {
+                    canMove = true;
+                }
+                for(int i = 0; i < puzzles.size(); i++)
+                    if(puzzles[i].isSolved(x, y - 1))
+                    {
+                        puzzles.erase(puzzles.begin() + i);
+                        canMove = true;
+                    }
+                if((x == endM.first && y -  1 == endM.second) || (x == endL.first && y - 1 == endL.second))
+                    canMove = true;
+            }
+
+            if(canMove)
+                y -= 1;
+        }
+
+        void moveRight()
+        {
+            bool canMove = false;
+            if(y < COL - 2 )
+            {
+                if(table[x][y + 1] == ' ')
+                {
+                    canMove = true;
+                }
+                for(int i = 0; i < puzzles.size(); i++)
+                    if(puzzles[i].isSolved(x, y + 1))
+                    {
+                        puzzles.erase(puzzles.begin() + i);
+                        canMove = true;
+                    }
+                if((x == endM.first && y + 1 == endM.second) || (x == endL.first && y + 1 == endL.second))
+                    canMove = true;
+            }
+
+            if(canMove)
+                y += 1;
+        }
+
+        void moveUp()
+        {
+            bool canMove = false;
+            if( x > 1 )
+            {
+                if(table[x - 1][y] == ' ')
+                {
+                    canMove = true;
+                }
+                for(int i = 0; i < puzzles.size(); i++)
+                    if(puzzles[i].isSolved(x - 1, y))
+                    {
+                        puzzles.erase(puzzles.begin() + i);
+                        canMove = true;
+                    }
+                    if((x - 1 == endM.first && y == endM.second) || (x - 1 == endL.first && y == endL.second))
+                        canMove = true;
+                
+            }
+
+            if(canMove)
+                x -= 1;
+        
+        }
+
+        void moveDown()
+        {
+             bool canMove = false;
+            if( x < LIN - 2 )
+            {
+                if(table[x + 1][y] == ' ')
+                {
+                    canMove = true;
+                }
+                for(int i = 0; i < puzzles.size(); i++)
+                    if(puzzles[i].isSolved(x + 1, y))
+                    {
+                        puzzles.erase(puzzles.begin() + 1);
+                        canMove = true;
+                    }
+                if((x + 1 == endM.first && y == endM.second) || (x + 1 == endL.first && y == endL.second))
+                    canMove = true;
+                
+            }
+
+            if(canMove)
+                x += 1;
+        }
+
+
 
 };
 
 vector<char> buffer;
 std::mutex mtx;
-vector<Puzzle> puzzles;
+
 Player m(1,1);
 Player l(3,3);
 
@@ -128,6 +229,11 @@ void startPuzzles()
     Puzzle p2('b', 3, COL-6, 'B', 1, COL - 6);
     puzzles.push_back(p);
     puzzles.push_back(p2);
+    endM.first = 1;
+    endM.second = COL - 2;
+    endL.first = 3;
+    endL.second = COL - 2;
+    
 }
 
 void createTable()
@@ -150,6 +256,10 @@ void attMaze()
     createTable();
     for(int i = 0; i < COL; i++)
         table[2][i] = '.';
+    
+    table[endM.first][endM.second] = '$';
+    table[endL.first][endL.second] = '$';
+    
     table[m.getX()][m.getY()] = 'M';
     table[l.getX()][l.getY()] = 'L';
 
@@ -162,6 +272,7 @@ void attMaze()
         table[kpx][kpy] = puzzles[i].getKeyName();
         table[dpx][dpy] = puzzles[i].getDoorName();
     }
+
 
     printMaze();
 }
@@ -187,12 +298,22 @@ void moveM()
     {
         if(buffer[0] == 'd')
         {
-            m.setY(m.getY() + 1);
+            m.moveRight();
             buffer.erase(buffer.begin());
         }
-        if(buffer[0] == 'a')
+        else if(buffer[0] == 'a')
         {
-            m.setY(m.getY() - 1);
+            m.moveLeft();
+            buffer.erase(buffer.begin());
+        }
+        else if(buffer[0] == 'w')
+        {
+            m.moveUp();
+            buffer.erase(buffer.begin());
+        }
+        else if(buffer[0] == 's' )
+        {
+            m.moveDown();
             buffer.erase(buffer.begin());
         }
     }
@@ -209,12 +330,23 @@ void moveL()
         
             if(buffer[0] == 'l')
             {
-                l.setY(l.getY() + 1);
+                l.moveRight();
                 buffer.erase(buffer.begin());
             }
             else if(buffer[0] == 'j')
             {
-                l.setY(l.getY() - 1);
+                // l.setY(l.getY() - 1);
+                l.moveLeft();
+                buffer.erase(buffer.begin());
+            }
+            else if(buffer[0] == 'i')
+            {
+                l.moveUp();
+                buffer.erase(buffer.begin());
+            }
+            else if(buffer[0] == 'k')
+            {
+                l.moveDown();
                 buffer.erase(buffer.begin());
             }
     }
@@ -223,10 +355,16 @@ void moveL()
 
 void move()
 {
-    //Semaphoro aqui.
+    if(m.getX() == endM.first && m.getY() == endM.second && l.getX() ==  endL.first && l.getY() == endL.second)
+        endGame();
     system("stty raw");
     char key;
     scanf("%c", &key);
+    if(key == ' ')
+    {
+        system("stty cooked");
+        exit(1);
+    }
     buffer.push_back(key);
     system("stty cooked");
 
@@ -240,17 +378,16 @@ void move()
     
 
 
-// void colision(Player m, Player l)
-// {
-
-// }
-// ^[[C
-// [C
+void endGame()
+{
+    system("clear");
+    cout << "Parabéns!!\nOs irmaos Threads conseguiram superar o labirinto!!" << endl;
+    exit(1);
+}
 
 void game()
 {
     move();
-    // colision(m, l);
     attMaze();
     
 }
