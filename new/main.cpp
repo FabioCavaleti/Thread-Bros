@@ -4,16 +4,16 @@
 #include <thread>
 #include <mutex>
 #include <unistd.h>
-//#include "player.hpp"
+#include "maze.hpp"
 #include "puzzle.hpp"
 
 #define LIN 5
 #define COL 30
 using namespace std;
 
-vector<vector<char> > table;
 vector<Puzzle> puzzles;
 pair<int, int> endM, endL;
+Maze maze(LIN, COL);
 
 class Player
 {
@@ -54,7 +54,7 @@ class Player
             bool canMove = false;
             if(y > 1 )
             {
-                if(table[x][y - 1] == ' ')
+                if(maze.getTable()[x][y - 1] == ' ')
                 {
                     canMove = true;
                 }
@@ -77,7 +77,7 @@ class Player
             bool canMove = false;
             if(y < COL - 2 )
             {
-                if(table[x][y + 1] == ' ')
+                if(maze.getTable()[x][y + 1] == ' ')
                 {
                     canMove = true;
                 }
@@ -100,7 +100,7 @@ class Player
             bool canMove = false;
             if( x > 1 )
             {
-                if(table[x - 1][y] == ' ')
+                if(maze.getTable()[x - 1][y] == ' ')
                 {
                     canMove = true;
                 }
@@ -125,7 +125,7 @@ class Player
              bool canMove = false;
             if( x < LIN - 2 )
             {
-                if(table[x + 1][y] == ' ')
+                if(maze.getTable()[x + 1][y] == ' ')
                 {
                     canMove = true;
                 }
@@ -170,38 +170,22 @@ void startPuzzles()
     endL.second = COL - 2;
 }
 
-void createTable()
-{
-    table.clear();
 
-    for(int i = 0; i < LIN; i++)
-    {
-        vector<char> v1;
-        for(int j = 0; j < COL; j++)
-        {
-            if(i == 0 || j == 0 || i == LIN - 1 || j == COL - 1)
-                v1.push_back('.');
-            else
-                v1.push_back(' ');
-        }
-        table.push_back(v1);
-    }
-}
 
 void attMaze()
 {
     system("clear");
 
-    createTable();
+    maze.createTable();
 
     for(int i = 0; i < COL; i++)
-        table[2][i] = '.';
+        maze.setTable(2, i, '.');
     
-    table[endM.first][endM.second] = '$';
-    table[endL.first][endL.second] = '$';
-    
-    table[m.getX()][m.getY()] = 'M';
-    table[l.getX()][l.getY()] = 'L';
+    maze.setTable(endM.first, endM.second, '$');
+    maze.setTable(endL.first, endL.second, '$');
+
+    maze.setTable(m.getX(), m.getY(), 'M');
+    maze.setTable(l.getX(), l.getY(), 'L');
 
     for(int i = 0; i < (int) puzzles.size(); i++)
     {
@@ -209,8 +193,8 @@ void attMaze()
         int kpy = puzzles[i].getKeyPY();
         int dpx = puzzles[i].getDoorPX();
         int dpy = puzzles[i].getDoorPY();
-        table[kpx][kpy] = puzzles[i].getKeyName();
-        table[dpx][dpy] = puzzles[i].getDoorName();
+        maze.setTable(kpx, kpy, puzzles[i].getKeyName());
+        maze.setTable(dpx, dpy, puzzles[i].getDoorName());
     }
 
     printMaze();
@@ -223,7 +207,7 @@ void printMaze()
     {
         for(int j = 0; j < COL; j++)
         {
-            cout << table[i][j];
+            cout << maze.getTable()[i][j];
         }
         cout << endl;
     }
