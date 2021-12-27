@@ -11,7 +11,7 @@
 #define COL 30
 using namespace std;
 
-char table[LIN][COL];
+vector<vector<char> > table;
 vector<Puzzle> puzzles;
 pair<int, int> endM, endL;
 
@@ -172,22 +172,28 @@ void startPuzzles()
 
 void createTable()
 {
+    table.clear();
+
     for(int i = 0; i < LIN; i++)
     {
+        vector<char> v1;
         for(int j = 0; j < COL; j++)
         {
             if(i == 0 || j == 0 || i == LIN - 1 || j == COL - 1)
-                table[i][j] = '.';
+                v1.push_back('.');
             else
-                table[i][j] = ' ';
+                v1.push_back(' ');
         }
+        table.push_back(v1);
     }
 }
 
 void attMaze()
 {
     system("clear");
+
     createTable();
+
     for(int i = 0; i < COL; i++)
         table[2][i] = '.';
     
@@ -206,7 +212,6 @@ void attMaze()
         table[kpx][kpy] = puzzles[i].getKeyName();
         table[dpx][dpy] = puzzles[i].getDoorName();
     }
-
 
     printMaze();
 }
@@ -256,32 +261,30 @@ void moveM()
 
 void moveL()
 {
-
     mtx.lock();
     if(buffer.size() > 0)
     {
-        
-            if(buffer[0] == 'l')
-            {
-                l.moveRight();
-                buffer.erase(buffer.begin());
-            }
-            else if(buffer[0] == 'j')
-            {
-                // l.setY(l.getY() - 1);
-                l.moveLeft();
-                buffer.erase(buffer.begin());
-            }
-            else if(buffer[0] == 'i')
-            {
-                l.moveUp();
-                buffer.erase(buffer.begin());
-            }
-            else if(buffer[0] == 'k')
-            {
-                l.moveDown();
-                buffer.erase(buffer.begin());
-            }
+        if(buffer[0] == 'l')
+        {
+            l.moveRight();
+            buffer.erase(buffer.begin());
+        }
+        else if(buffer[0] == 'j')
+        {
+            // l.setY(l.getY() - 1);
+            l.moveLeft();
+            buffer.erase(buffer.begin());
+        }
+        else if(buffer[0] == 'i')
+        {
+            l.moveUp();
+            buffer.erase(buffer.begin());
+        }
+        else if(buffer[0] == 'k')
+        {
+            l.moveDown();
+            buffer.erase(buffer.begin());
+        }
     }
     mtx.unlock();
 }
@@ -306,11 +309,8 @@ void move()
 
     Mario.join();
     Luigi.join();
-
 }
     
-
-
 void endGame()
 {
     system("clear");
@@ -335,7 +335,6 @@ int main()
     {
         game();
     }
-
 
     return 0;
 }
