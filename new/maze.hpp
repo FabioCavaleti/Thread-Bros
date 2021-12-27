@@ -1,8 +1,6 @@
 #ifndef _H_MAZE
 #define _H_MAZE
 
-#include <vector>
-
 class Maze
 {
     private:
@@ -13,6 +11,8 @@ class Maze
         Maze(int rows, int cols);
 
         void createTable();
+        void updateTable();
+        void replaceTable();
         std::vector<std::vector<char> > getTable();
         void setTable(int row, int col, char val);
 };

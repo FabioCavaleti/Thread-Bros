@@ -1,6 +1,9 @@
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "maze.hpp"
-
-
 
 Maze::Maze(int rows, int cols)
 {
@@ -11,18 +14,37 @@ Maze::Maze(int rows, int cols)
 void Maze::createTable(){
     table.clear();
 
-    for(int i = 0; i < rows; i++)
-    {
-        std::vector<char> v1;
-        for(int j = 0; j < cols; j++)
-        {
-            if(i == 0 || j == 0 || i == rows - 1 || j == cols - 1)
-                v1.push_back('.');
-            else
-                v1.push_back(' ');
+    std::ifstream infile("mapabasico.txt");
+    std::string line;
+
+    while (std::getline(infile, line)) {
+        std::vector<char> row;
+
+        for (char &c : line) {
+            row.push_back(c);
         }
-        table.push_back(v1);
+
+        table.push_back(row);
     }
+}
+
+void Maze::updateTable(){
+    table.clear();
+
+    std::ifstream infile("mapabasico.txt");
+    std::string line;
+
+    while (std::getline(infile, line)) {
+        std::vector<char> row;
+
+        for (char &c : line) {
+            row.push_back(c);
+        }
+
+        table.push_back(row);
+    }
+
+    replaceTable();
 }
 
 std::vector<std::vector<char> > Maze::getTable()
@@ -33,4 +55,16 @@ std::vector<std::vector<char> > Maze::getTable()
 void Maze::setTable(int row, int col, char val)
 {
     table[row][col] = val;
+}
+
+void Maze::replaceTable()
+{
+    for(int i = 0; i < rows; i++){
+        for(int j = 0; j < cols; j++){
+            if(table[i][j] == 'M' || table[i][j] == 'L')
+            {
+                setTable(i, j, ' ');
+            }
+        }
+    }
 }

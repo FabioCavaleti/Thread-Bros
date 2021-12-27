@@ -28,7 +28,7 @@ class Player
             y = py;
         }
 
-        void setX( int px)
+        void setX(int px)
         {
             x = px;
         }
@@ -144,19 +144,17 @@ class Player
                 x += 1;
         }
 
-
-
 };
+
+Player m(0, 0);
+Player l(0, 0);
+
 
 void printMaze();
 void endGame();
 
-Player m(1,1);
-Player l(3,3);
-
 vector<char> buffer;
 std::mutex mtx;
-
 
 void startPuzzles()
 {
@@ -170,13 +168,11 @@ void startPuzzles()
     endL.second = COL - 2;
 }
 
-
-
 void attMaze()
 {
     system("clear");
 
-    maze.createTable();
+    maze.updateTable();
 
     for(int i = 0; i < COL; i++)
         maze.setTable(2, i, '.');
@@ -277,6 +273,7 @@ void move()
 {
     if(m.getX() == endM.first && m.getY() == endM.second && l.getX() ==  endL.first && l.getY() == endL.second)
         endGame();
+
     system("stty raw");
     char key;
     scanf("%c", &key);
@@ -302,22 +299,49 @@ void endGame()
     exit(1);
 }
 
-void game()
+
+std::pair<int, int> find(auto table, char key)
 {
-    move();
-    attMaze();
+    int x, y;
     
+    for(int i = 0; i < LIN; i++){
+        for(int j = 0; j < COL; j++){
+            if(table[i][j] == key)
+            {
+                x = i;
+                y = j;
+            }
+        }
+    }
+
+    return make_pair(x, y);
 }
+
 
 int main()
 {
+    maze.createTable();
+
+    auto table = maze.getTable();
+
+    // Pegamos a posição do Mario e Luigi no mapa
+    std::pair<int, int> posMario = find(table, 'M');
+    std::pair<int, int> posLuigi = find(table, 'L');
+
+    // Salvamos as posições
+    m.setX(posMario.first);
+    m.setY(posMario.second);
+    l.setX(posLuigi.first);
+    l.setY(posLuigi.second);
+
+    // PROCURAR PUZZLES NO MAPA!
 
     startPuzzles();
- 
-    attMaze();
+
     while(true)
-    {
-        game();
+    {     
+        attMaze();
+        move();
     }
 
     return 0;
