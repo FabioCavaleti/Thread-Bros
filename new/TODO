@@ -1,0 +1,4 @@
+- Modularizar o código;
+- Implementar código de leitura de mapa do Antonio;
+- Verificar possibilidade mudar funcionando do mutex;
+- Preparar "interface" de jogo com menu e níveis.

@@ -1,88 +1,19 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
-#include <curses.h>
-#include <ncurses.h>
 #include <thread>
 #include <mutex>
 #include <unistd.h>
-
-//g++ -g trab.cpp -o trab -lncurses -lpthread
-
-
+//#include "player.hpp"
+#include "puzzle.hpp"
 
 #define LIN 5
 #define COL 30
 using namespace std;
 
 char table[LIN][COL];
-
-
-void printMaze();
-void endGame();
-
-class Puzzle
-{
-    private:
-
-        char keyName;
-        int keyPx;
-        int keyPy;
-        
-        char doorName;
-        int doorPx;
-        int doorPy;
-
-    public:
-
-        Puzzle(char kn, int kpx, int kpy, char dn, int dpx, int dpy)
-        {
-            keyName = kn;
-            keyPx = kpx;
-            keyPy = kpy;
-            doorName = dn;
-            doorPx = dpx;
-            doorPy = dpy;
-        }
-
-        char getKeyName()
-        {
-            return keyName;        
-        }
-        int getKeyPX()
-        {
-            return keyPx;
-        }
-        int getKeyPY()
-        {
-            return keyPy;
-        }
-        char getDoorName()
-        {
-            return doorName;
-        }
-        int getDoorPX()
-        {
-            return doorPx;
-        }
-        int getDoorPY()
-        {
-            return doorPy;
-        }
-
-        bool isSolved(int px, int py)
-        {
-            if(px == keyPx && py == keyPy)
-                return true;
-            else
-                return false;
-        }
-
-};
-
 vector<Puzzle> puzzles;
 pair<int, int> endM, endL;
-
 
 class Player
 {
@@ -217,11 +148,15 @@ class Player
 
 };
 
-vector<char> buffer;
-std::mutex mtx;
+void printMaze();
+void endGame();
 
 Player m(1,1);
 Player l(3,3);
+
+vector<char> buffer;
+std::mutex mtx;
+
 
 void startPuzzles()
 {
@@ -233,7 +168,6 @@ void startPuzzles()
     endM.second = COL - 2;
     endL.first = 3;
     endL.second = COL - 2;
-    
 }
 
 void createTable()
@@ -276,7 +210,6 @@ void attMaze()
 
     printMaze();
 }
-
 
 
 void printMaze()
@@ -394,7 +327,6 @@ void game()
 
 int main()
 {
-
 
     startPuzzles();
  
