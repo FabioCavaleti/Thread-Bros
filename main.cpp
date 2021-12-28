@@ -2,8 +2,10 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <chrono>
 #include <mutex>
 #include <unistd.h>
+#include <fstream>
 #include "maze.hpp"
 #include "puzzle.hpp"
 #include "player.hpp"
@@ -96,13 +98,15 @@ void endGame()
 {
     system("clear");
     std::cout << "Parabéns!!\nOs irmaos Threads conseguiram superar o labirinto!!" << std::endl;
-    exit(1);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
-void move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
+int move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
-    if(m.getX() == m.getEndPos().first && m.getY() == m.getEndPos().second && l.getX() == l.getEndPos().first && l.getY() == l.getEndPos().second)
+    if(m.getX() == m.getEndPos().first && m.getY() == m.getEndPos().second && l.getX() == l.getEndPos().first && l.getY() == l.getEndPos().second){
         endGame();
+        return -1;
+    }
 
     system("stty raw");
     char key;
@@ -122,6 +126,8 @@ void move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 
     Mario.join();
     Luigi.join();
+
+    return 0;
 }
 
 std::pair<int, int> find(Maze &maze, char key)
@@ -183,21 +189,63 @@ void setObjectsMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player 
     }
 }
 
+void printScreen(){
+    system("clear");
+
+    std::ifstream infile;
+
+    infile = std::ifstream("screens/main.txt");
+
+    std::vector<std::vector<char> > screen;
+
+    std::string line;
+
+    while (std::getline(infile, line)) {
+        std::vector<char> row;
+
+        for (char &c : line) {
+            row.push_back(c);
+        }
+
+        screen.push_back(row);
+    }
+
+    for (int i = 0; i < screen.size(); i++)
+    {
+        for (int j = 0; j < screen[i].size(); j++)
+        {
+            std::cout << screen[i][j];
+        }
+        std::cout << std::endl;
+    }
+
+    char key;
+    scanf("%c", &key);
+
+    infile.close();
+}
+
 
 int main()
 {
-    Maze maze(2);
-    std::vector<Puzzle> puzzles;
-    Player m(0, 0, std::make_pair(0, 0));
-    Player l(0, 0, std::make_pair(0, 0));
 
-    setObjectsMaze(maze, puzzles, m, l);
+    printScreen();
 
-    while(true)
-    {     
-        attMaze(maze, puzzles, m, l);
-        maze.printTable();
-        move(maze, puzzles, m, l);
+    for (int i = 1; i <= 3; i++) {
+        Maze maze(i);
+        std::vector<Puzzle> puzzles;
+        Player m(0, 0, std::make_pair(0, 0));
+        Player l(0, 0, std::make_pair(0, 0));
+
+        setObjectsMaze(maze, puzzles, m, l);
+
+        while(true)
+        {     
+            attMaze(maze, puzzles, m, l);
+            maze.printTable();
+            if (move(maze, puzzles, m, l) == -1)
+                break;
+        }
     }
 
     return 0;
