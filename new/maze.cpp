@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 #include "maze.hpp"
 
 Maze::Maze(int level)
@@ -12,8 +11,13 @@ Maze::Maze(int level)
 
 void Maze::createTable(){
 
-    std::ifstream infile("mapabasico.txt");
+    std::ifstream infile;
 
+    if (level == 1){
+        infile = std::ifstream("levels/level1.txt");
+    } else if (level == 2){
+        infile = std::ifstream("levels/level2.txt");
+    }
 
     std::string line;
 
@@ -35,7 +39,13 @@ void Maze::createTable(){
 void Maze::updateTable(){
     table.clear();
 
-    std::ifstream infile("mapabasico.txt");
+    std::ifstream infile;
+
+    if (level == 1){
+        infile = std::ifstream("levels/level1.txt");
+    } else if (level == 2){
+        infile = std::ifstream("levels/level2.txt");
+    }
  
     std::string line;
 

@@ -12,7 +12,7 @@ using namespace std;
 
 vector<Puzzle> puzzles;
 std::pair<int, int> endM, endL;
-Maze maze(1);
+Maze maze(2);
 
 int LIN, COL;
 
