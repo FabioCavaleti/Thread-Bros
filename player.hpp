@@ -8,20 +8,18 @@ class Player
 {
     private:
         int x, y;
-        std::pair<int, int> endM, endL;
+        std::pair<int, int> endPos;
 
     public:
-        Player(int px, int py, std::pair<int, int> endMPos, std::pair<int, int> endLPos);
+        Player(int px, int py, std::pair<int, int> endPosition);
 
         void setX(int px);
         void setY(int py);
         int getX();
         int getY();
 
-        std::pair<int, int> getEndM();
-        std::pair<int, int> getEndL();
-        void setEndM(std::pair<int, int> endMPos);
-        void setEndL(std::pair<int, int> endMPos);
+        std::pair<int, int> getEndPos();
+        void setEndPos(std::pair<int, int> endPosition);
 
         void moveLeft(Maze &maze, std::vector<Puzzle> &puzzles);
         void moveRight(Maze &maze, std::vector<Puzzle> &puzzles);

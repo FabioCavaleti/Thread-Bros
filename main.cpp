@@ -8,12 +8,10 @@
 #include "puzzle.hpp"
 #include "player.hpp"
 
-using namespace std;
-
-vector<char> buffer;
+std::vector<char> buffer;
 std::mutex mtx;
 
-void attMaze(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
+void attMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
     system("clear");
 
@@ -34,7 +32,7 @@ void attMaze(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
 }
 
 
-void moveM(Maze &maze, vector<Puzzle> &puzzles, Player &m)
+void moveM(Maze &maze, std::vector<Puzzle> &puzzles, Player &m)
 {
     mtx.lock();
     if(buffer.size() > 0)
@@ -64,7 +62,7 @@ void moveM(Maze &maze, vector<Puzzle> &puzzles, Player &m)
 
 }
 
-void moveL(Maze &maze, vector<Puzzle> &puzzles, Player &l)
+void moveL(Maze &maze, std::vector<Puzzle> &puzzles, Player &l)
 {
     mtx.lock();
     if(buffer.size() > 0)
@@ -97,13 +95,13 @@ void moveL(Maze &maze, vector<Puzzle> &puzzles, Player &l)
 void endGame()
 {
     system("clear");
-    cout << "Parabéns!!\nOs irmaos Threads conseguiram superar o labirinto!!" << endl;
+    std::cout << "Parabéns!!\nOs irmaos Threads conseguiram superar o labirinto!!" << std::endl;
     exit(1);
 }
 
-void move(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
+void move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
-    if(m.getX() == m.getEndM().first && m.getY() == m.getEndM().second && l.getX() == l.getEndL().first && l.getY() == l.getEndL().second)
+    if(m.getX() == m.getEndPos().first && m.getY() == m.getEndPos().second && l.getX() == l.getEndPos().first && l.getY() == l.getEndPos().second)
         endGame();
 
     system("stty raw");
@@ -140,11 +138,10 @@ std::pair<int, int> find(Maze &maze, char key)
         }
     }
 
-    return make_pair(x, y);
+    return std::make_pair(x, y);
 }
 
-//std::pair<int, int> endM, endL;
-void setObjectsMaze(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
+void setObjectsMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
     maze.createTable();
 
@@ -163,16 +160,10 @@ void setObjectsMaze(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
     l.setY(posLuigi.second);
 
     // Saída dos personagens
-    auto endM = find(maze, '+');
-    auto endL = find(maze, '-');
-
-    m.setEndM(endM);
-    m.setEndL(endL);
-    l.setEndM(endM);
-    l.setEndL(endL);
+    m.setEndPos(find(maze, '+'));
+    l.setEndPos(find(maze, '-'));
 
     // Chaves e portas
-
     char key = 'a';
 
     for (int i = 0; i < 10; i++)
@@ -196,9 +187,9 @@ void setObjectsMaze(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
 int main()
 {
     Maze maze(2);
-    vector<Puzzle> puzzles;
-    Player m(0, 0, make_pair(0, 0), make_pair(0, 0));
-    Player l(0, 0, make_pair(0, 0), make_pair(0, 0));
+    std::vector<Puzzle> puzzles;
+    Player m(0, 0, std::make_pair(0, 0));
+    Player l(0, 0, std::make_pair(0, 0));
 
     setObjectsMaze(maze, puzzles, m, l);
 

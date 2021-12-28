@@ -2,12 +2,11 @@
 #include <vector>
 #include "player.hpp"
 
-Player::Player(int px, int py, std::pair<int, int> endMPos, std::pair<int, int> endLPos)
+Player::Player(int px, int py, std::pair<int, int> endPosition)
 {
     x = px;
     y = py;
-    endM = endMPos;
-    endL = endLPos;
+    endPos = endPosition;
 }
 
 void Player::setX(int px)
@@ -30,25 +29,16 @@ int Player::getY()
     return y;
 }
 
-std::pair<int, int> Player::getEndM()
+std::pair<int, int> Player::getEndPos()
 {
-    return endM;
+    return endPos;
 }
 
-std::pair<int, int> Player::getEndL()
+void Player::setEndPos(std::pair<int, int> endPosition)
 {
-    return endL;
+    endPos = endPosition;
 }
 
-void Player::setEndM(std::pair<int, int> endMPos)
-{
-    endM = endMPos;
-}
-
-void Player::setEndL(std::pair<int, int> endLPos)
-{
-    endL = endLPos;
-}
 
 void Player::moveLeft(Maze &maze, std::vector<Puzzle> &puzzles)
 {
@@ -65,7 +55,7 @@ void Player::moveLeft(Maze &maze, std::vector<Puzzle> &puzzles)
                 puzzles.erase(puzzles.begin() + i);
                 canMove = true;
             }
-        if((x == endM.first && y -  1 == endM.second) || (x == endL.first && y - 1 == endL.second))
+        if(x == endPos.first && y -  1 == endPos.second)
             canMove = true;
     }
 
@@ -88,7 +78,7 @@ void Player::moveRight(Maze &maze, std::vector<Puzzle> &puzzles)
                 puzzles.erase(puzzles.begin() + i);
                 canMove = true;
             }
-        if((x == endM.first && y + 1 == endM.second) || (x == endL.first && y + 1 == endL.second))
+        if(x == endPos.first && y + 1 == endPos.second)
             canMove = true;
     }
 
@@ -111,7 +101,7 @@ void Player::moveUp(Maze &maze, std::vector<Puzzle> &puzzles)
                 puzzles.erase(puzzles.begin() + i);
                 canMove = true;
             }
-            if((x - 1 == endM.first && y == endM.second) || (x - 1 == endL.first && y == endL.second))
+            if(x - 1 == endPos.first && y == endPos.second)
                 canMove = true;
         
     }
@@ -136,7 +126,7 @@ void Player::moveDown(Maze &maze, std::vector<Puzzle> &puzzles)
                 puzzles.erase(puzzles.begin() + 1);
                 canMove = true;
             }
-        if((x + 1 == endM.first && y == endM.second) || (x + 1 == endL.first && y == endL.second))
+        if(x + 1 == endPos.first && y == endPos.second)
             canMove = true;
         
     }
