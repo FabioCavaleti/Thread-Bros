@@ -16,6 +16,7 @@ class Maze
         std::vector<std::vector<char> > getTable();
         std::pair<int, int> getDims();
         void setTable(int row, int col, char val);
+        void printTable();
 };
 
 #endif

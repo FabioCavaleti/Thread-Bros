@@ -10,28 +10,14 @@
 
 using namespace std;
 
-vector<Puzzle> puzzles;
-std::pair<int, int> endM, endL;
-Maze maze(1);
-
-Player m(0, 0, make_pair(0, 0), make_pair(0, 0));
-Player l(0, 0, make_pair(0, 0), make_pair(0, 0));
-
-void printMaze();
-void endGame();
-
 vector<char> buffer;
 std::mutex mtx;
 
-
-void attMaze()
+void attMaze(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
 {
     system("clear");
 
     maze.updateTable();
-    
-    //maze.setTable(endM.first, endM.second, '+');
-    //maze.setTable(endL.first, endL.second, '-');
 
     maze.setTable(m.getX(), m.getY(), 'M');
     maze.setTable(l.getX(), l.getY(), 'L');
@@ -45,24 +31,10 @@ void attMaze()
         maze.setTable(kpx, kpy, puzzles[i].getKeyName());
         maze.setTable(dpx, dpy, puzzles[i].getDoorName());
     }
-
-    printMaze();
 }
 
 
-void printMaze()
-{
-    for(int i = 0; i < maze.getDims().first; i++)
-    {
-        for(int j = 0; j < maze.getDims().second; j++)
-        {
-            cout << maze.getTable()[i][j];
-        }
-        cout << endl;
-    }
-}
-
-void moveM()
+void moveM(Maze &maze, vector<Puzzle> &puzzles, Player &m)
 {
     mtx.lock();
     if(buffer.size() > 0)
@@ -92,7 +64,7 @@ void moveM()
 
 }
 
-void moveL()
+void moveL(Maze &maze, vector<Puzzle> &puzzles, Player &l)
 {
     mtx.lock();
     if(buffer.size() > 0)
@@ -122,9 +94,16 @@ void moveL()
     mtx.unlock();
 }
 
-void move()
+void endGame()
 {
-    if(m.getX() == endM.first && m.getY() == endM.second && l.getX() ==  endL.first && l.getY() == endL.second)
+    system("clear");
+    cout << "Parabéns!!\nOs irmaos Threads conseguiram superar o labirinto!!" << endl;
+    exit(1);
+}
+
+void move(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
+{
+    if(m.getX() == m.getEndM().first && m.getY() == m.getEndM().second && l.getX() == l.getEndL().first && l.getY() == l.getEndL().second)
         endGame();
 
     system("stty raw");
@@ -140,27 +119,20 @@ void move()
     buffer.push_back(key);
     system("stty cooked");
 
-    std::thread Mario(moveM);
-    std::thread Luigi(moveL);
+    std::thread Mario(moveM, std::ref(maze), std::ref(puzzles), std::ref(m));
+    std::thread Luigi(moveL, std::ref(maze), std::ref(puzzles), std::ref(l));
 
     Mario.join();
     Luigi.join();
 }
-    
-void endGame()
-{
-    system("clear");
-    cout << "Parabéns!!\nOs irmaos Threads conseguiram superar o labirinto!!" << endl;
-    exit(1);
-}
 
-std::pair<int, int> find(auto table, char key)
+std::pair<int, int> find(Maze &maze, char key)
 {
     int x = -1, y = -1;
     
     for(int i = 0; i < maze.getDims().first; i++){
         for(int j = 0; j < maze.getDims().second; j++){
-            if(table[i][j] == key)
+            if(maze.getTable()[i][j] == key)
             {
                 x = i;
                 y = j;
@@ -171,8 +143,8 @@ std::pair<int, int> find(auto table, char key)
     return make_pair(x, y);
 }
 
-
-void setObjectsMaze()
+//std::pair<int, int> endM, endL;
+void setObjectsMaze(Maze &maze, vector<Puzzle> &puzzles, Player &m, Player &l)
 {
     maze.createTable();
 
@@ -181,8 +153,8 @@ void setObjectsMaze()
     auto table = maze.getTable();
 
     // Pegamos a posição do Mario e Luigi no mapa
-    std::pair<int, int> posMario = find(table, 'M');
-    std::pair<int, int> posLuigi = find(table, 'L');
+    std::pair<int, int> posMario = find(maze, 'M');
+    std::pair<int, int> posLuigi = find(maze, 'L');
 
     // Salvamos as posições deles
     m.setX(posMario.first);
@@ -191,8 +163,8 @@ void setObjectsMaze()
     l.setY(posLuigi.second);
 
     // Saída dos personagens
-    endM = find(table, '+');
-    endL = find(table, '-');
+    auto endM = find(maze, '+');
+    auto endL = find(maze, '-');
 
     m.setEndM(endM);
     m.setEndL(endL);
@@ -205,18 +177,14 @@ void setObjectsMaze()
 
     for (int i = 0; i < 10; i++)
     {
-        std::pair<int, int> keyPos = find(table, key + i);
+        std::pair<int, int> keyPos = find(maze, key + i);
 
         if(keyPos.first == -1)
             break;
 
         char door = key + i - 32;
 
-        //cout << keyPos.first << " " << keyPos.second << endl;
-
-        //cout << key + i << endl;
-
-        std::pair<int, int> doorPos = find(table, door);
+        std::pair<int, int> doorPos = find(maze, door);
 
         Puzzle p(key + i, keyPos.first, keyPos.second, door, doorPos.first, doorPos.second);
         puzzles.push_back(p);
@@ -225,15 +193,20 @@ void setObjectsMaze()
 }
 
 
-
 int main()
 {
-    setObjectsMaze();
+    Maze maze(2);
+    vector<Puzzle> puzzles;
+    Player m(0, 0, make_pair(0, 0), make_pair(0, 0));
+    Player l(0, 0, make_pair(0, 0), make_pair(0, 0));
+
+    setObjectsMaze(maze, puzzles, m, l);
 
     while(true)
     {     
-        attMaze();
-        move();
+        attMaze(maze, puzzles, m, l);
+        maze.printTable();
+        move(maze, puzzles, m, l);
     }
 
     return 0;

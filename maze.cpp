@@ -89,3 +89,15 @@ void Maze::replaceTable()
         }
     }
 }
+
+void Maze::printTable()
+{
+    for(int i = 0; i < rows; i++)
+    {
+        for(int j = 0; j < cols; j++)
+        {
+            std::cout << table[i][j];
+        }
+        std::cout << std::endl;
+    }
+}

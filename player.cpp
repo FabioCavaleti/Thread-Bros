@@ -1,195 +1,146 @@
+#include <iostream>
+#include <vector>
 #include "player.hpp"
-#include "maps.hpp"
-#include <bits/stdc++.h>
 
-Player::Player (bool isMario) {
-    isMario = isMario;
-
-    playerIcon = isMario ? 'M' : 'L';
+Player::Player(int px, int py, std::pair<int, int> endMPos, std::pair<int, int> endLPos)
+{
+    x = px;
+    y = py;
+    endM = endMPos;
+    endL = endLPos;
 }
 
-void Player::movePlayer(map_t *mapa, std::string direction, int amount){
-    std::pair<int,int> pos;
+void Player::setX(int px)
+{
+    x = px;
+}
 
-    pos = isMario ? mapa->marioPos : mapa->luigiPos;
+void Player::setY(int py)
+{
+    y = py;
+}
 
-    char prevChar;
+int Player::getX()
+{
+    return x;
+}
 
-    if(direction.compare("up") == 0){
-        //se a nova posição for válida
-        //if(pos.first+amount > 0){ Necessário checar?
-            char nextPos = mapa->contents[pos.first+amount][pos.second];                
-            switch (nextPos)
-            {
-                case '@':
-                    if(critOcupada(mapa)){
-                        printf("Não posso me mover para uma zona crítica!, meu irmão já está em uma!!");
-                        break;
-                    }
+int Player::getY()
+{
+    return y;
+}
 
-                    prevChar = '@';
+std::pair<int, int> Player::getEndM()
+{
+    return endM;
+}
 
-                    mapa->contents[pos.first+amount][pos.second] = playerIcon;
-                    mapa->contents[pos.first][pos.second] = prevChar;
+std::pair<int, int> Player::getEndL()
+{
+    return endL;
+}
 
-                    if(isMario){ 
-                        mapa->marioPos = std::make_pair(pos.first+amount, pos.second);
-                    } else {
-                        mapa->luigiPos = std::make_pair(pos.first+amount, pos.second);
-                    }
+void Player::setEndM(std::pair<int, int> endMPos)
+{
+    endM = endMPos;
+}
 
-                    break;
-                case ' ':
-                    prevChar = ' ';
+void Player::setEndL(std::pair<int, int> endLPos)
+{
+    endL = endLPos;
+}
 
-                    mapa->contents[pos.first+amount][pos.second] = playerIcon;
-                    mapa->contents[pos.first][pos.second] = prevChar;
-
-                    if(isMario){ 
-                        mapa->marioPos = std::make_pair(pos.first+amount, pos.second);
-                    } else {
-                        mapa->luigiPos = std::make_pair(pos.first+amount, pos.second);
-                    }
-
-                    break;
-                default:
-                    printf("Não posso me mover pra lá!\n");
-                    break;
-            }
-        //}
-
-
-    }else if (direction.compare("down") == 0)
+void Player::moveLeft(Maze &maze, std::vector<Puzzle> &puzzles)
+{
+    bool canMove = false;
+    if(y > 1)
     {
-
-        if(pos.first-amount > 0){ 
-            char nextPos = mapa->contents[pos.first-amount][pos.second];                
-            switch (nextPos)
-            {
-                case '@':
-                    if(critOcupada(mapa)){
-                        printf("Não posso me mover para uma zona crítica!, meu irmão já está em uma!!");
-                        break;
-                    }
-
-                    prevChar = '@';
-
-                    mapa->contents[pos.first-amount][pos.second] = playerIcon;
-                    mapa->contents[pos.first][pos.second] = prevChar;
-
-                    if(isMario){ 
-                        mapa->marioPos = std::make_pair(pos.first-amount, pos.second);
-                    } else {
-                        mapa->luigiPos = std::make_pair(pos.first-amount, pos.second);
-                    }
-
-                    break;
-                case ' ':
-                    prevChar = ' ';
-
-                    mapa->contents[pos.first-amount][pos.second] = playerIcon;
-                    mapa->contents[pos.first][pos.second] = prevChar;
-
-                    if(isMario){ 
-                        mapa->marioPos = std::make_pair(pos.first-amount, pos.second);
-                    } else {
-                        mapa->luigiPos = std::make_pair(pos.first-amount, pos.second);
-                    }
-
-                    break;
-                default:
-                    printf("Não posso me mover pra lá!\n");
-                    break;
-            }
+        if(maze.getTable()[x][y - 1] == ' ')
+        {
+            canMove = true;
         }
-
-    }else if (direction.compare("left") == 0)
-    {
-
-        if(pos.second-amount > 0){
-            char nextPos = mapa->contents[pos.first][pos.second-amount];                
-            switch (nextPos)
+        for(int i = 0; i < puzzles.size(); i++)
+            if(puzzles[i].isSolved(x, y - 1))
             {
-                case '@':
-                    if(critOcupada(mapa)){
-                        printf("Não posso me mover para uma zona crítica!, meu irmão já está em uma!!");
-                        break;
-                    }
-
-                    prevChar = '@';
-
-                    mapa->contents[pos.first][pos.second-amount] = playerIcon;
-                    mapa->contents[pos.first][pos.second] = prevChar;
-
-                    if(isMario){ 
-                        mapa->marioPos = std::make_pair(pos.first, pos.second-amount);
-                    } else {
-                        mapa->luigiPos = std::make_pair(pos.first, pos.second-amount);
-                    }
-
-                    break;
-                case ' ':
-                    prevChar = ' ';
-
-                    mapa->contents[pos.first][pos.second-amount] = playerIcon;
-                    mapa->contents[pos.first][pos.second] = prevChar;
-
-                    if(isMario){ 
-                        mapa->marioPos = std::make_pair(pos.first, pos.second-amount);
-                    } else {
-                        mapa->luigiPos = std::make_pair(pos.first, pos.second-amount);
-                    }
-                    break;
-                default:
-                    printf("Não posso me mover pra lá!\n");
-                    break;
+                puzzles.erase(puzzles.begin() + i);
+                canMove = true;
             }
-        }
-
-    }else if (direction.compare("right") == 0)
-    {
-
-        //if(pos.second+amount > 0){ Necessário checar?
-            char nextPos = mapa->contents[pos.first][pos.second+amount];                
-            switch (nextPos)
-            {
-                case '@':
-                    if(critOcupada(mapa)){
-                        printf("Não posso me mover para uma zona crítica!, meu irmão já está em uma!!");
-                        break;
-                    }
-
-                    prevChar = '@';
-
-                    mapa->contents[pos.first][pos.second+amount] = playerIcon;
-                    mapa->contents[pos.first][pos.second] = prevChar;
-
-                    if(isMario){ 
-                        mapa->marioPos = std::make_pair(pos.first, pos.second+amount);
-                    } else {
-                        mapa->luigiPos = std::make_pair(pos.first, pos.second+amount);
-                    }
-
-                    break;
-                case ' ':
-                    prevChar = ' ';
-
-                    mapa->contents[pos.first][pos.second+amount] = playerIcon;
-                    mapa->contents[pos.first][pos.second] = prevChar;
-
-                    if(isMario){ 
-                        mapa->marioPos = std::make_pair(pos.first, pos.second+amount);
-                    } else {
-                        mapa->luigiPos = std::make_pair(pos.first, pos.second+amount);
-                    }
-                    break;
-                default:
-                    printf("Não posso me mover pra lá!\n");
-                    break;
-            }
-        //}
-
-
+        if((x == endM.first && y -  1 == endM.second) || (x == endL.first && y - 1 == endL.second))
+            canMove = true;
     }
-      
+
+    if(canMove)
+        y -= 1;
+}
+
+void Player::moveRight(Maze &maze, std::vector<Puzzle> &puzzles)
+{
+    bool canMove = false;
+    if(y < maze.getDims().second - 2 )
+    {
+        if(maze.getTable()[x][y + 1] == ' ')
+        {
+            canMove = true;
+        }
+        for(int i = 0; i < puzzles.size(); i++)
+            if(puzzles[i].isSolved(x, y + 1))
+            {
+                puzzles.erase(puzzles.begin() + i);
+                canMove = true;
+            }
+        if((x == endM.first && y + 1 == endM.second) || (x == endL.first && y + 1 == endL.second))
+            canMove = true;
+    }
+
+    if(canMove)
+        y += 1;
+}
+
+void Player::moveUp(Maze &maze, std::vector<Puzzle> &puzzles)
+{
+    bool canMove = false;
+    if( x > 1 )
+    {
+        if(maze.getTable()[x - 1][y] == ' ')
+        {
+            canMove = true;
+        }
+        for(int i = 0; i < puzzles.size(); i++)
+            if(puzzles[i].isSolved(x - 1, y))
+            {
+                puzzles.erase(puzzles.begin() + i);
+                canMove = true;
+            }
+            if((x - 1 == endM.first && y == endM.second) || (x - 1 == endL.first && y == endL.second))
+                canMove = true;
+        
+    }
+
+    if(canMove)
+        x -= 1;
+
+}
+
+void Player::moveDown(Maze &maze, std::vector<Puzzle> &puzzles)
+{
+    bool canMove = false;
+    if( x < maze.getDims().first - 2 )
+    {
+        if(maze.getTable()[x + 1][y] == ' ')
+        {
+            canMove = true;
+        }
+        for(int i = 0; i < puzzles.size(); i++)
+            if(puzzles[i].isSolved(x + 1, y))
+            {
+                puzzles.erase(puzzles.begin() + 1);
+                canMove = true;
+            }
+        if((x + 1 == endM.first && y == endM.second) || (x + 1 == endL.first && y == endL.second))
+            canMove = true;
+        
+    }
+
+    if(canMove)
+        x += 1;
 }
