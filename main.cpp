@@ -98,15 +98,12 @@ void endGame()
 {
     system("clear");
     std::cout << "Parabéns!!\nOs irmaos Threads conseguiram superar o labirinto!!" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 int move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
-    if(m.getX() == m.getEndPos().first && m.getY() == m.getEndPos().second && l.getX() == l.getEndPos().first && l.getY() == l.getEndPos().second){
-        endGame();
+    if(m.getX() == m.getEndPos().first && m.getY() == m.getEndPos().second && l.getX() == l.getEndPos().first && l.getY() == l.getEndPos().second)
         return -1;
-    }
 
     system("stty raw");
     char key;
@@ -189,12 +186,20 @@ void setObjectsMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player 
     }
 }
 
-void printScreen(){
+void printScreen(int select){
     system("clear");
 
     std::ifstream infile;
 
-    infile = std::ifstream("screens/main.txt");
+    if (select == 0){
+        infile = std::ifstream("screens/main.txt");
+    } else if (select == 1) {
+        infile = std::ifstream("screens/level1.txt");
+    } else if (select == 2) {
+        infile = std::ifstream("screens/level2.txt");
+    } else if (select == 3) {
+        infile = std::ifstream("screens/level3.txt");
+    }
 
     std::vector<std::vector<char> > screen;
 
@@ -219,19 +224,21 @@ void printScreen(){
         std::cout << std::endl;
     }
 
-    char key;
-    scanf("%c", &key);
-
     infile.close();
 }
 
 
 int main()
 {
+    printScreen(0);
 
-    printScreen();
+    char key;
+    scanf("%c", &key);
 
     for (int i = 1; i <= 3; i++) {
+        printScreen(i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+        
         Maze maze(i);
         std::vector<Puzzle> puzzles;
         Player m(0, 0, std::make_pair(0, 0));
@@ -247,6 +254,8 @@ int main()
                 break;
         }
     }
+
+    endGame();
 
     return 0;
 }
