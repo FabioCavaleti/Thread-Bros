@@ -1,29 +1,30 @@
 #ifndef _H_PLAYER
 #define _H_PLAYER
 
+#include "maze.hpp"
+#include "puzzle.hpp"
 
 class Player
 {
     private:
-        std::pair<int, int> pos, endPos;
-        char table[8][30];
+        int x, y;
+        std::pair<int, int> endM, endL;
 
     public:
-        Player(std::pair<int, int> pos, std::pair<int, int> endPos, char table[][30]);
+        Player(int px, int py, std::pair<int, int> endMPos, std::pair<int, int> endLPos);
 
-        void Player::setPos(std::pair<int, int> pos);
-        std::pair<int, int> Player::getPos();
-
-        void Player::setEndPos(std::pair<int, int> endPos);
-        std::pair<int, int> Player::getEndPos();
-
+        void setX(int px);
+        void setY(int py);
         int getX();
         int getY();
 
-        void moveLeft();
-        void moveRight();
-        void moveUp();
-        void moveDown();
+        void setEndM(std::pair<int, int> endMPos);
+        void setEndL(std::pair<int, int> endMPos);
+
+        void moveLeft(Maze &maze, std::vector<Puzzle> &puzzles);
+        void moveRight(Maze &maze, std::vector<Puzzle> &puzzles);
+        void moveUp(Maze &maze, std::vector<Puzzle> &puzzles);
+        void moveDown(Maze &maze, std::vector<Puzzle> &puzzles);
 };
 
 #endif

@@ -1,40 +1,51 @@
 #include <iostream>
+#include <vector>
 #include "player.hpp"
 
-Player::Player(std::pair<int, int> pos, std::pair<int, int> endPos, char table[][30])
+Player::Player(int px, int py, std::pair<int, int> endMPos, std::pair<int, int> endLPos)
 {
-    this->pos = pos;
-    this->endPos = endPos;
-    this->table = table;
+    x = px;
+    y = py;
+    endM = endMPos;
+    endL = endLPos;
 }
 
-void Player::setPos(std::pair<int, int> pos)
+void Player::setX(int px)
 {
-    this->pos = pos;
+    x = px;
 }
 
-std::pair<int, int> Player::getPos()
+void Player::setY(int py)
 {
-    return pos;
+    y = py;
 }
 
-void Player::setEndPos(std::pair<int, int> endPos)
+int Player::getX()
 {
-    this->endPos = endPos;
+    return x;
 }
 
-std::pair<int, int> Player::getEndPos()
+int Player::getY()
 {
-    return endPos;
+    return y;
 }
 
-void Player::moveLeft()
+void Player::setEndM(std::pair<int, int> endMPos)
+{
+    endM = endMPos;
+}
+
+void Player::setEndL(std::pair<int, int> endLPos)
+{
+    endL = endLPos;
+}
+
+void Player::moveLeft(Maze &maze, std::vector<Puzzle> &puzzles)
 {
     bool canMove = false;
-    
     if(y > 1)
     {
-        if(table[x][y - 1] == ' ')
+        if(maze.getTable()[x][y - 1] == ' ')
         {
             canMove = true;
         }
@@ -52,13 +63,12 @@ void Player::moveLeft()
         y -= 1;
 }
 
-void Player::moveRight()
+void Player::moveRight(Maze &maze, std::vector<Puzzle> &puzzles)
 {
     bool canMove = false;
-
-    if(y < COL - 2 )
+    if(y < maze.getDims().second - 2 )
     {
-        if(table[x][y + 1] == ' ')
+        if(maze.getTable()[x][y + 1] == ' ')
         {
             canMove = true;
         }
@@ -76,13 +86,12 @@ void Player::moveRight()
         y += 1;
 }
 
-void Player::moveUp()
+void Player::moveUp(Maze &maze, std::vector<Puzzle> &puzzles)
 {
     bool canMove = false;
-
     if( x > 1 )
     {
-        if(table[x - 1][y] == ' ')
+        if(maze.getTable()[x - 1][y] == ' ')
         {
             canMove = true;
         }
@@ -102,13 +111,12 @@ void Player::moveUp()
 
 }
 
-void Player::moveDown()
+void Player::moveDown(Maze &maze, std::vector<Puzzle> &puzzles)
 {
     bool canMove = false;
-
-    if(x < LIN - 2)
+    if( x < maze.getDims().first - 2 )
     {
-        if(table[x + 1][y] == ' ')
+        if(maze.getTable()[x + 1][y] == ' ')
         {
             canMove = true;
         }

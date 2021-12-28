@@ -4,152 +4,18 @@
 #include <thread>
 #include <mutex>
 #include <unistd.h>
-#include <cctype>
 #include "maze.hpp"
 #include "puzzle.hpp"
+#include "player.hpp"
 
 using namespace std;
 
 vector<Puzzle> puzzles;
 std::pair<int, int> endM, endL;
-Maze maze(2);
+Maze maze(1);
 
-int LIN, COL;
-
-class Player
-{
-    private:
-        int x;
-        int y;
-
-    public:
-        Player(int px, int py)
-        {
-            x = px;
-            y = py;
-        }
-
-        void setX(int px)
-        {
-            x = px;
-        }
-
-        void setY(int py)
-        {
-            y = py;
-        }
-
-        int getX()
-        {
-            return x;
-        }
-
-        int getY()
-        {
-            return y;
-        }
-
-
-        void moveLeft()
-        {
-            bool canMove = false;
-            if(y > 1 )
-            {
-                if(maze.getTable()[x][y - 1] == ' ')
-                {
-                    canMove = true;
-                }
-                for(int i = 0; i < puzzles.size(); i++)
-                    if(puzzles[i].isSolved(x, y - 1))
-                    {
-                        puzzles.erase(puzzles.begin() + i);
-                        canMove = true;
-                    }
-                if((x == endM.first && y -  1 == endM.second) || (x == endL.first && y - 1 == endL.second))
-                    canMove = true;
-            }
-
-            if(canMove)
-                y -= 1;
-        }
-
-        void moveRight()
-        {
-            bool canMove = false;
-            if(y < COL - 2 )
-            {
-                if(maze.getTable()[x][y + 1] == ' ')
-                {
-                    canMove = true;
-                }
-                for(int i = 0; i < puzzles.size(); i++)
-                    if(puzzles[i].isSolved(x, y + 1))
-                    {
-                        puzzles.erase(puzzles.begin() + i);
-                        canMove = true;
-                    }
-                if((x == endM.first && y + 1 == endM.second) || (x == endL.first && y + 1 == endL.second))
-                    canMove = true;
-            }
-
-            if(canMove)
-                y += 1;
-        }
-
-        void moveUp()
-        {
-            bool canMove = false;
-            if( x > 1 )
-            {
-                if(maze.getTable()[x - 1][y] == ' ')
-                {
-                    canMove = true;
-                }
-                for(int i = 0; i < puzzles.size(); i++)
-                    if(puzzles[i].isSolved(x - 1, y))
-                    {
-                        puzzles.erase(puzzles.begin() + i);
-                        canMove = true;
-                    }
-                    if((x - 1 == endM.first && y == endM.second) || (x - 1 == endL.first && y == endL.second))
-                        canMove = true;
-                
-            }
-
-            if(canMove)
-                x -= 1;
-        
-        }
-
-        void moveDown()
-        {
-             bool canMove = false;
-            if( x < LIN - 2 )
-            {
-                if(maze.getTable()[x + 1][y] == ' ')
-                {
-                    canMove = true;
-                }
-                for(int i = 0; i < puzzles.size(); i++)
-                    if(puzzles[i].isSolved(x + 1, y))
-                    {
-                        puzzles.erase(puzzles.begin() + 1);
-                        canMove = true;
-                    }
-                if((x + 1 == endM.first && y == endM.second) || (x + 1 == endL.first && y == endL.second))
-                    canMove = true;
-                
-            }
-
-            if(canMove)
-                x += 1;
-        }
-
-};
-
-Player m(0, 0);
-Player l(0, 0);
-
+Player m(0, 0, make_pair(0, 0), make_pair(0, 0));
+Player l(0, 0, make_pair(0, 0), make_pair(0, 0));
 
 void printMaze();
 void endGame();
@@ -186,9 +52,9 @@ void attMaze()
 
 void printMaze()
 {
-    for(int i = 0; i < LIN; i++)
+    for(int i = 0; i < maze.getDims().first; i++)
     {
-        for(int j = 0; j < COL; j++)
+        for(int j = 0; j < maze.getDims().second; j++)
         {
             cout << maze.getTable()[i][j];
         }
@@ -203,22 +69,22 @@ void moveM()
     {
         if(buffer[0] == 'd')
         {
-            m.moveRight();
+            m.moveRight(maze, puzzles);
             buffer.erase(buffer.begin());
         }
         else if(buffer[0] == 'a')
         {
-            m.moveLeft();
+            m.moveLeft(maze, puzzles);
             buffer.erase(buffer.begin());
         }
         else if(buffer[0] == 'w')
         {
-            m.moveUp();
+            m.moveUp(maze, puzzles);
             buffer.erase(buffer.begin());
         }
         else if(buffer[0] == 's' )
         {
-            m.moveDown();
+            m.moveDown(maze, puzzles);
             buffer.erase(buffer.begin());
         }
     }
@@ -233,23 +99,23 @@ void moveL()
     {
         if(buffer[0] == 'l')
         {
-            l.moveRight();
+            l.moveRight(maze, puzzles);
             buffer.erase(buffer.begin());
         }
         else if(buffer[0] == 'j')
         {
             // l.setY(l.getY() - 1);
-            l.moveLeft();
+            l.moveLeft(maze, puzzles);
             buffer.erase(buffer.begin());
         }
         else if(buffer[0] == 'i')
         {
-            l.moveUp();
+            l.moveUp(maze, puzzles);
             buffer.erase(buffer.begin());
         }
         else if(buffer[0] == 'k')
         {
-            l.moveDown();
+            l.moveDown(maze, puzzles);
             buffer.erase(buffer.begin());
         }
     }
@@ -292,8 +158,8 @@ std::pair<int, int> find(auto table, char key)
 {
     int x = -1, y = -1;
     
-    for(int i = 0; i < LIN; i++){
-        for(int j = 0; j < COL; j++){
+    for(int i = 0; i < maze.getDims().first; i++){
+        for(int j = 0; j < maze.getDims().second; j++){
             if(table[i][j] == key)
             {
                 x = i;
@@ -312,9 +178,6 @@ void setObjectsMaze()
 
     auto dims = maze.getDims();
 
-    LIN = dims.first;
-    COL = dims.second;
-
     auto table = maze.getTable();
 
     // Pegamos a posição do Mario e Luigi no mapa
@@ -330,6 +193,11 @@ void setObjectsMaze()
     // Saída dos personagens
     endM = find(table, '+');
     endL = find(table, '-');
+
+    m.setEndM(endM);
+    m.setEndL(endL);
+    l.setEndM(endM);
+    l.setEndL(endL);
 
     // Chaves e portas
 
@@ -370,258 +238,3 @@ int main()
 
     return 0;
 }
-
-// #include <cstdio>
-// #include <iostream>
-// #include <vector>
-// #include <curses.h>
-// #include <unistd.h>
-// #include <termios.h>
-
-
-
-// #define LIN 5
-// #define COL 30
-// using namespace std;
-
-// char table[LIN][COL];
-
-
-// void printMaze();
-
-
-
-
-// class Puzzle
-// {
-//     private:
-
-//         char keyName;
-//         int keyPx;
-//         int keyPy;
-        
-//         char doorName;
-//         int doorPx;
-//         int doorPy;
-
-//     public:
-
-//         Puzzle(char kn, int kpx, int kpy, char dn, int dpx, int dpy)
-//         {
-//             keyName = kn;
-//             keyPx = kpx;
-//             keyPy = kpy;
-//             doorName = dn;
-//             doorPx = dpx;
-//             doorPy = dpy;
-//         }
-
-//         char getKeyName()
-//         {
-//             return keyName;        
-//         }
-//         int getKeyPX()
-//         {
-//             return keyPx;
-//         }
-//         int getKeyPY()
-//         {
-//             return keyPy;
-//         }
-//         char getDoorName()
-//         {
-//             return doorName;
-//         }
-//         int getDoorPX()
-//         {
-//             return doorPx;
-//         }
-//         int getDoorPY()
-//         {
-//             return doorPy;
-//         }
-
-//         bool isSolved(int px, int py)
-//         {
-//             if(px == keyPx && py == keyPy)
-//                 return true;
-//             else
-//                 return false;
-//         }
-
-// };
-
-// class Player
-// {
-//     private:
-//         int x;
-//         int y;
-
-//     public:
-//         Player(int px, int py)
-//         {
-//             x = px;
-//             y = py;
-//         }
-
-//         void setX( int px)
-//         {
-//             x = px;
-//         }
-
-//         void setY(int py)
-//         {
-//             y = py;
-//         }
-
-//         int getX()
-//         {
-//             return x;
-//         }
-
-//         int getY()
-//         {
-//             return y;
-//         }
-
-
-
-// };
-
-
-// vector<Puzzle> puzzles;
-// Player m(1,1);
-// Player l(3,3);
-
-// void startPuzzles()
-// {
-//     Puzzle p('a', 1, COL-5, 'A', 3, COL-3);
-//     puzzles.push_back(p);
-// }
-
-// void createTable()
-// {
-//     for(int i = 0; i < LIN; i++)
-//     {
-//         for(int j = 0; j < COL; j++)
-//         {
-//             if(i == 0 || j == 0 || i == LIN - 1 || j == COL - 1)
-//                 table[i][j] = '.';
-//             else
-//                 table[i][j] = ' ';
-//         }
-//     }
-// }
-
-// void attMaze()
-// {
-//     system("clear");
-//     createTable();
-//     for(int i = 0; i < COL; i++)
-//         table[2][i] = '.';
-//     table[m.getX()][m.getY()] = '*';
-//     table[l.getX()][l.getY()] = '#';
-
-//     for(int i = 0; i < (int) puzzles.size(); i++)
-//     {
-//         int kpx = puzzles[i].getKeyPX();
-//         int kpy = puzzles[i].getKeyPY();
-//         int dpx = puzzles[i].getDoorPX();
-//         int dpy = puzzles[i].getDoorPY();
-//         table[kpx][kpy] = puzzles[i].getKeyName();
-//         table[dpx][dpy] = puzzles[i].getDoorName();
-//     }
-
-//     printMaze();
-// }
-
-
-
-// void printMaze()
-// {
-//     for(int i = 0; i < LIN; i++)
-//     {
-//         for(int j = 0; j < COL; j++)
-//         {
-//             cout << table[i][j];
-//         }
-//         cout << endl;
-//     }
-// }
-
-// void move()
-// {
-//     //Semaphoro aqui.
-//     system("stty raw");
-//     //  initscr();
-//     char key;
-//     scanf("%c", &key);
-//     // char key = getch();
-//     // endwin();
-
-//     system("stty cooked");
-//      cout << key << endl;
-//     if(key == 'd')
-//     {
-//         m.setY(m.getY() + 1);
-        
-        
-       
-        
-//     }
-//     if(key == 'a')
-//     {
-//         m.setY(m.getY() - 1);
-        
-//     }
-
-
-//     if(key == '[')
-//     {
-//         scanf("%c", &key);
-//         if(key == 'C')
-//         {
-//             l.setY(l.getY() + 1);
-             
-//         }
-//         if(key == 'D')
-//         {
-//             l.setY(l.getY() - 1);
-            
-//         }
-
-//     }
-    
-
-// }
-    
-
-
-// // void colision(Player m, Player l)
-// // {
-
-// // }
-
-// void game()
-// {
-//     move();
-//     // colision(m, l);
-//     attMaze();
-//     // sleep(500);
-// }
-
-// int main()
-// {
-//     termios t;
-
-//     startPuzzles();
- 
-//     attMaze();
-//     while(true)
-//     {
-//         game();
-//     }
-
-
-//     return 0;
-// }
