@@ -72,7 +72,7 @@ void Maze::replaceTable()
 {
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < cols; j++){
-            if(table[i][j] == 'M' || table[i][j] == 'L')
+            if(table[i][j] == 'M' || table[i][j] == 'L' || (table[i][j] >= 97 && table[i][j] <= 106) || (table[i][j] >= 65 && table[i][j] <= 74))
             {
                 setTable(i, j, ' ');
             }
