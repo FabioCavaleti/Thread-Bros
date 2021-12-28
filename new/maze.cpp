@@ -5,16 +5,16 @@
 
 #include "maze.hpp"
 
-Maze::Maze(int rows, int cols)
+Maze::Maze(int level)
 {
-    this->rows = rows;
-    this->cols = cols;
+    this->level = level;
 }
 
 void Maze::createTable(){
-    table.clear();
 
     std::ifstream infile("mapabasico.txt");
+
+
     std::string line;
 
     while (std::getline(infile, line)) {
@@ -24,14 +24,19 @@ void Maze::createTable(){
             row.push_back(c);
         }
 
+        cols = row.size();
+
         table.push_back(row);
     }
+
+    rows = table.size();
 }
 
 void Maze::updateTable(){
     table.clear();
 
     std::ifstream infile("mapabasico.txt");
+ 
     std::string line;
 
     while (std::getline(infile, line)) {
@@ -51,6 +56,12 @@ std::vector<std::vector<char> > Maze::getTable()
 {
     return table;
 }
+
+std::pair<int, int> Maze::getDims()
+{
+    return std::make_pair(rows, cols);
+}
+
 
 void Maze::setTable(int row, int col, char val)
 {

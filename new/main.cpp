@@ -7,13 +7,13 @@
 #include "maze.hpp"
 #include "puzzle.hpp"
 
-#define LIN 5
-#define COL 30
 using namespace std;
 
 vector<Puzzle> puzzles;
-pair<int, int> endM, endL;
-Maze maze(LIN, COL);
+std::pair<int, int> endM, endL;
+Maze maze(1);
+
+int LIN, COL;
 
 class Player
 {
@@ -156,29 +156,22 @@ void endGame();
 vector<char> buffer;
 std::mutex mtx;
 
-void startPuzzles()
-{
-    Puzzle p('a', 1, COL-7, 'A', 3, COL-7);
-    Puzzle p2('b', 3, COL-6, 'B', 1, COL - 6);
-    puzzles.push_back(p);
-    puzzles.push_back(p2);
-    endM.first = 1;
-    endM.second = COL - 2;
-    endL.first = 3;
-    endL.second = COL - 2;
-}
+// void startPuzzles()
+// {
+//     Puzzle p('a', 1, COL-7, 'A', 3, COL-7);
+//     Puzzle p2('b', 3, COL-6, 'B', 1, COL - 6);
+//     puzzles.push_back(p);
+//     puzzles.push_back(p2);
+// }
 
 void attMaze()
 {
     system("clear");
 
     maze.updateTable();
-
-    for(int i = 0; i < COL; i++)
-        maze.setTable(2, i, '.');
     
-    maze.setTable(endM.first, endM.second, '$');
-    maze.setTable(endL.first, endL.second, '$');
+    //maze.setTable(endM.first, endM.second, '+');
+    //maze.setTable(endL.first, endL.second, '-');
 
     maze.setTable(m.getX(), m.getY(), 'M');
     maze.setTable(l.getX(), l.getY(), 'L');
@@ -189,8 +182,8 @@ void attMaze()
         int kpy = puzzles[i].getKeyPY();
         int dpx = puzzles[i].getDoorPX();
         int dpy = puzzles[i].getDoorPY();
-        maze.setTable(kpx, kpy, puzzles[i].getKeyName());
-        maze.setTable(dpx, dpy, puzzles[i].getDoorName());
+        //maze.setTable(kpx, kpy, puzzles[i].getKeyName());
+        //maze.setTable(dpx, dpy, puzzles[i].getDoorName());
     }
 
     printMaze();
@@ -277,11 +270,13 @@ void move()
     system("stty raw");
     char key;
     scanf("%c", &key);
+
     if(key == ' ')
     {
         system("stty cooked");
         exit(1);
     }
+
     buffer.push_back(key);
     system("stty cooked");
 
@@ -322,6 +317,13 @@ int main()
 {
     maze.createTable();
 
+    auto dims = maze.getDims();
+
+    LIN = dims.first;
+    COL = dims.second;
+
+    cout << dims.first << " " << dims.second << endl;
+
     auto table = maze.getTable();
 
     // Pegamos a posição do Mario e Luigi no mapa
@@ -336,7 +338,15 @@ int main()
 
     // PROCURAR PUZZLES NO MAPA!
 
-    startPuzzles();
+    std::pair<int, int> posEndMario = find(table, '+');
+    std::pair<int, int> posEndLuigi = find(table, '-');
+
+    endM.first = posEndMario.first;
+    endM.second = posEndMario.second;
+    endL.first = posEndLuigi.first;
+    endL.second = posEndLuigi.second;
+
+    //startPuzzles();
 
     while(true)
     {     

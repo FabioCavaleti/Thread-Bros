@@ -4,16 +4,17 @@
 class Maze
 {
     private:
-        int rows, cols;
+        int level, rows, cols;
         std::vector<std::vector<char> > table;
 
     public:
-        Maze(int rows, int cols);
+        Maze(int level);
 
         void createTable();
         void updateTable();
         void replaceTable();
         std::vector<std::vector<char> > getTable();
+        std::pair<int, int> getDims();
         void setTable(int row, int col, char val);
 };
 
