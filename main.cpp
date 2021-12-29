@@ -13,6 +13,9 @@
 std::vector<char> buffer;
 std::mutex mtx;
 
+void printScreen(int select);
+
+
 void attMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
     system("clear");
@@ -94,10 +97,16 @@ void moveL(Maze &maze, std::vector<Puzzle> &puzzles, Player &l)
     mtx.unlock();
 }
 
-void endGame()
+
+void endGame(int select)
 {
-    system("clear");
-    std::cout << "Parabéns!!\nOs irmaos Threads conseguiram superar o labirinto!!" << std::endl;
+    if (select == 1){
+        system("clear");
+        std::cout << "Você encerrou o jogo." << std::endl;
+    } else {
+        printScreen(5);
+    }
+    
 }
 
 int move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
@@ -112,7 +121,7 @@ int move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
     if(key == ' ') // LIDAR COM ISSO AQUI
     {
         system("stty cooked");
-        exit(1);
+        return 1;
     }
 
     buffer.push_back(key);
@@ -205,6 +214,8 @@ void printScreen(int select){
         infile = std::ifstream("screens/level3.txt");
     } else if (select == 4) {
         infile = std::ifstream("screens/level4.txt");
+    } else if (select == 5) {
+        infile = std::ifstream("screens/congrats.txt");
     }
 
     std::vector<std::vector<char> > screen;
@@ -249,6 +260,8 @@ int main()
 
     scanf("%c", &key);
 
+    int end = 0;
+
     for (int i = 1; i <= 4; i++) {
         printScreen(i);
         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
@@ -264,12 +277,18 @@ int main()
         {     
             attMaze(maze, puzzles, m, l);
             maze.printTable();
-            if (move(maze, puzzles, m, l) == -1)
+            end = move(maze, puzzles, m, l);
+            if (end == -1){
                 break;
+            } else if (end == 1){
+                break;
+            }
         }
+        if (end == 1)
+            break;
     }
 
-    endGame();
+    endGame(end);
 
     return 0;
 }
