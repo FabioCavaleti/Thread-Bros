@@ -109,7 +109,7 @@ int move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
     char key;
     scanf("%c", &key);
 
-    if(key == ' ')
+    if(key == ' ') // LIDAR COM ISSO AQUI
     {
         system("stty cooked");
         exit(1);
@@ -199,6 +199,8 @@ void printScreen(int select){
         infile = std::ifstream("screens/level2.txt");
     } else if (select == 3) {
         infile = std::ifstream("screens/level3.txt");
+    } else if (select == 4) {
+        infile = std::ifstream("screens/instructions.txt");
     }
 
     std::vector<std::vector<char> > screen;
@@ -235,10 +237,14 @@ int main()
     char key;
     scanf("%c", &key);
 
+    printScreen(4);
+
+    scanf("%c", &key);
+
     for (int i = 1; i <= 3; i++) {
         printScreen(i);
         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-        
+
         Maze maze(i);
         std::vector<Puzzle> puzzles;
         Player m(0, 0, std::make_pair(0, 0));
