@@ -191,8 +191,12 @@ void printScreen(int select){
 
     std::ifstream infile;
 
-    if (select == 0){
+    if (select == -2){
         infile = std::ifstream("screens/main.txt");
+    } else if (select == -1) {
+        infile = std::ifstream("screens/instructions.txt");
+    } else if (select == 0) {
+        infile = std::ifstream("screens/instructions2.txt");
     } else if (select == 1) {
         infile = std::ifstream("screens/level1.txt");
     } else if (select == 2) {
@@ -200,7 +204,7 @@ void printScreen(int select){
     } else if (select == 3) {
         infile = std::ifstream("screens/level3.txt");
     } else if (select == 4) {
-        infile = std::ifstream("screens/instructions.txt");
+        infile = std::ifstream("screens/level4.txt");
     }
 
     std::vector<std::vector<char> > screen;
@@ -232,16 +236,20 @@ void printScreen(int select){
 
 int main()
 {
-    printScreen(0);
+    printScreen(-2);
 
     char key;
     scanf("%c", &key);
 
-    printScreen(4);
+    printScreen(-1);
 
     scanf("%c", &key);
 
-    for (int i = 1; i <= 3; i++) {
+    printScreen(0);
+
+    scanf("%c", &key);
+
+    for (int i = 1; i <= 4; i++) {
         printScreen(i);
         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 

@@ -19,7 +19,9 @@ void Maze::createTable(){
         infile = std::ifstream("levels/level2.txt");
     } else if (level == 3){
         infile = std::ifstream("levels/level3.txt");
-    }
+    } else if (level == 4){
+        infile = std::ifstream("levels/level4.txt");
+    } 
 
     std::string line;
 
@@ -51,7 +53,9 @@ void Maze::updateTable(){
         infile = std::ifstream("levels/level2.txt");
     } else if (level == 3){
         infile = std::ifstream("levels/level3.txt");
-    }
+    } else if (level == 4){
+        infile = std::ifstream("levels/level4.txt");
+    } 
  
     std::string line;
 
