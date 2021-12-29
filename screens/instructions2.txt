@@ -3,8 +3,8 @@ _________________________________________________________________________
                   OS PERSONAGENS DEVEM COLETAR AS CHAVES
                      QUE ABREM AS RESPECTIVAS PORTAS
 
-                        (chave) a -> A (porta)
-                        (chave) b -> B (porta)
+                         (chave) a -> A (porta)
+                         (chave) b -> B (porta)
                           e assim em diante...
 
 
@@ -14,10 +14,10 @@ _________________________________________________________________________
 
                 +                                        -
 
-               OS IRMÃOS DEVEM IR ATÉ SUAS RESPETIVAS SAÍDAS
+              OS IRMÃOS DEVEM IR ATÉ SUAS RESPECTIVAS SAÍDAS
 
                             + PARA M, - PARA L     
 _________________________________________________________________________
 
-                       APERTE ENTER PARA CONTINUAR
+                        APERTE ENTER PARA CONTINUAR
 _________________________________________________________________________
