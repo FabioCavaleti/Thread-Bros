@@ -1,7 +1,7 @@
 _________________________________________________________________________
                           
                   OS PERSONAGENS DEVEM COLETAR AS CHAVES
-                     QUE ABREM AS RESPETIVAS PORTAS
+                     QUE ABREM AS RESPECTIVAS PORTAS
 
                         (chave) a -> A (porta)
                         (chave) b -> B (porta)
