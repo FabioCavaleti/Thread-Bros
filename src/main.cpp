@@ -38,6 +38,15 @@ std::pair<int, int> findObject(Maze &maze, char key);
 void endGame(int select);
 void printScreen(int select);
 
+/*
+ * Leitura dos movimentos para os personagens e alocação de threads para os movimentos deles.
+ * 
+ * Parâmetros: Maze &maze, referência ao objeto do labirinto trabalhado; std::vector<Puzzle> &puzzles, referência ao vetor de puzzles trabalhado;
+ *              Player &m, referência ao jogador M; Player &l, referência ao jogador L.
+ * 
+ * Retorna: inteiro igual a -1, se os irmãos chegaram ao destino; 1 caso o usuário sai do jogo; 0 caso o usuário ainda não tenha chegado ao destino.
+ * 
+ */
 int move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
     // Se os dois personagens chegaram nas suas respectivas posiçõs finais, o labirinto acaba
@@ -72,6 +81,14 @@ int move(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
     return 0;
 }
 
+/*
+ * Função de movimento para o jogador M. Utiliza do semáforo mutex para permitir exclusão mútua. Os irmãos devem compartilhar do mesmo recurso,
+ * mas não devem acessar o mesmo recurso ao mesmo tempo para evitar conflitos com a movimentação utilizando o buffer.
+ * 
+ * Parâmetros: Maze &maze, referência ao objeto do labirinto trabalhado; std::vector<Puzzle> &puzzles, referência ao vetor de puzzles trabalhado;
+ *              Player &m, referência ao jogador M.
+ * 
+ */
 void moveM(Maze &maze, std::vector<Puzzle> &puzzles, Player &m)
 {
     // Define região crítica para acesso ao buffer
@@ -106,6 +123,14 @@ void moveM(Maze &maze, std::vector<Puzzle> &puzzles, Player &m)
 
 }
 
+/*
+ * Função de movimento para o jogador L. Utiliza do semáforo mutex para permitir exclusão mútua. Os irmãos devem compartilhar do mesmo recurso,
+ * mas não devem acessar o mesmo recurso ao mesmo tempo para evitar conflitos com a movimentação utilizando o buffer.
+ * 
+ * Parâmetros: Maze &maze, referência ao objeto do labirinto trabalhado; std::vector<Puzzle> &puzzles, referência ao vetor de puzzles trabalhado;
+ *              Player &l, referência ao jogador L.
+ * 
+ */
 void moveL(Maze &maze, std::vector<Puzzle> &puzzles, Player &l)
 {
     // Define região crítica para acesso ao buffer
@@ -139,6 +164,13 @@ void moveL(Maze &maze, std::vector<Puzzle> &puzzles, Player &l)
 }
 
 
+/*
+ * Atualiza o labirinto considerando a leitura do mesmo arquivo de texto, mas com informações das posições dos personagens e puzzles.
+ * 
+ * Parâmetros: Maze &maze, referência ao objeto do labirinto trabalhado; std::vector<Puzzle> &puzzles, referência ao vetor de puzzles trabalhado;
+ *              Player &m, referência ao jogador M; Player &l, referência ao jogador L.
+ * 
+ */
 void attMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
     // Limpa o terminal
@@ -163,7 +195,13 @@ void attMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
     }
 }
 
-
+/*
+ * Dado um labirinto lido por arquivo de texto, são definidos os objetos e suas respectivas posições para serem usadas no jogo.
+ * 
+ * Parâmetros: Maze &maze, referência ao objeto do labirinto trabalhado; std::vector<Puzzle> &puzzles, referência ao vetor de puzzles trabalhado;
+ *              Player &m, referência ao jogador M; Player &l, referência ao jogador L.
+ * 
+ */
 void setObjectsMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player &l)
 {
     maze.createTable();
@@ -205,8 +243,14 @@ void setObjectsMaze(Maze &maze, std::vector<Puzzle> &puzzles, Player &m, Player 
     }
 }
 
-
-
+/*
+ * Considerando um labirinto, é procurado por um dado objeto por ele e retornado sua posição.
+ * 
+ * Parâmetros: Maze &maze, referência ao objeto do labirinto trabalhado; char object, objeto a ser procurado.
+ * 
+ * Retorna: Par <int, int>, que representa a posição do objeto.
+ * 
+ */
 std::pair<int, int> findObject(Maze &maze, char object)
 {
     int x = -1, y = -1;
@@ -224,6 +268,12 @@ std::pair<int, int> findObject(Maze &maze, char object)
     return std::make_pair(x, y);
 }
 
+/*
+ * Finaliza jogo com uma mensagem dependendo do que aconteceu, se o usuário fechou o jogo, ou passou por todos os níveis.
+ * 
+ * Parâmetros: int select, seleção do que aconteceu.
+ * 
+ */
 void endGame(int select)
 {
     if (select == 1){ // Se o usuário saiu do jogo
@@ -235,6 +285,12 @@ void endGame(int select)
     
 }
 
+/*
+ * Imprime telas como a tela inicial, instruções e abertura de um nível.
+ * 
+ * Parâmetros: int select, seleção da tela a ser impressa.
+ * 
+ */
 void printScreen(int select){
     system("clear");
 
@@ -285,7 +341,12 @@ void printScreen(int select){
     infile.close();
 }
 
-
+/*
+ * Função principal onde é executado o loop para execução do jogo.
+ * 
+ * Retorna: 0, caso execução da função foi um sucesso.
+ * 
+ */
 int main()
 {
     // Tela inicial e instruções
@@ -307,6 +368,7 @@ int main()
     // Loop pelos labirintos disponíveis
     for (int i = 1; i <= 4; i++) {
         printScreen(i);
+        // Mostra tela por 1,5 segundos
         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 
         // Inicializa elementos como o próprio labirinto, puzzles e personagens
@@ -324,12 +386,12 @@ int main()
             attMaze(maze, puzzles, m, l);
             maze.printTable();
             end = move(maze, puzzles, m, l);
-            if (end == -1 || end == 1){
+            if (end == -1 || end == 1){ // Ou o usuário saiu do jogo ou passou pelo labirinto
                 break;
             } 
         }
 
-        if (end == 1)
+        if (end == 1) // Se saiu do jogo, sai do loop externo também
             break;
     }
 
