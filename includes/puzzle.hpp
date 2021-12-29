@@ -5,13 +5,13 @@ class Puzzle
 {
     private:
 
-        char keyName;
-        int keyPx;
-        int keyPy;
+        char keyName; // Valor da chave
+        int keyPx; // Posição x da chave
+        int keyPy; // Posição y da chave
         
-        char doorName;
-        int doorPx;
-        int doorPy;
+        char doorName; // Valor da porta
+        int doorPx; // Posição x da porta
+        int doorPy; // Posição y da porta
 
     public:
 

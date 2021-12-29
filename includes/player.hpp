@@ -7,8 +7,8 @@
 class Player
 {
     private:
-        int x, y;
-        std::pair<int, int> endPos;
+        int x, y; // Coordenadas atuais do jogador
+        std::pair<int, int> endPos; // Coordenadas do destino do jogador
 
     public:
         Player(int px, int py, std::pair<int, int> endPosition);

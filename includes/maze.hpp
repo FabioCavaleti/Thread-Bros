@@ -4,8 +4,8 @@
 class Maze
 {
     private:
-        int level, rows, cols;
-        std::vector<std::vector<char> > table;
+        int level, rows, cols; // Nível do labirinto, linhas e colunas do labirinto
+        std::vector<std::vector<char> > table; // Tabela do labirinto
 
     public:
         Maze(int level);

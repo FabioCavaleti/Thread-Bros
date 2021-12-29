@@ -9,7 +9,7 @@
 
     ----------------------------------------------------------------
 
-    Este arquivo contém as funções principais do jogo, contando com funções de imprimir a tela, alocação de threads e o loop
+    Este arquivo de código contém as funções principais do jogo, contando com funções de imprimir a tela, alocação de threads e o loop
     para a execução do jogo.
 
 */
