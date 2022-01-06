@@ -1,5 +1,10 @@
 # Thread Bros
- 
+Thread Bros é um jogo desenvolvido na disciplina de sistemas operacionais visando a utilização de threads e semáforos.
+
+O jogo foi desenvolvido por:
+ANTONIO RODRIGUES RIGOLINO
+BRENO LÍVIO SILVA DE ALMEIDA
+FABIO HENRIQUE ALVES CAVALETI
 
 # 1 INTRODUÇÃO:
 
